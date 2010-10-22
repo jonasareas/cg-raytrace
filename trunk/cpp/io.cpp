@@ -2,6 +2,8 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <vector>
+using namespace std;
 
 #include "../hpp/varios.hpp"
 #include "../hpp/objeto.hpp"
@@ -40,7 +42,7 @@ bool SalvaPPM( int linhas, int colunas, int cores, Cor_rgb pix[], char arquivo[2
   return true;
 }
 
-bool LeArquivo( Cenario * hcenario, Camara * hcamara, int *hlinhas, int *hcolunas, char arquivo[255])
+bool LeArquivoDAT( Cenario * hcenario, Camara * hcamara, int *hlinhas, int *hcolunas, char arquivo[255])
 {
   FILE * arqdat;
   tok  tag;
@@ -84,12 +86,83 @@ bool LeArquivo( Cenario * hcenario, Camara * hcamara, int *hlinhas, int *hcoluna
   return true;
 }
 
+vector<Triangulo *> read(char file_name[255]) {
+    char line[80];
+    int vertices;
+    int faces;
+    
+    strcpy(file_name, "dat/tetrahedron.ply");
+
+    vector<Vetor_3D> vectors;
+    vector<Triangulo *> triangles;
+
+    FILE * file = fopen(file_name, "r");
+    if (!file) 
+        return triangles;
+    
+    fgets(line, 80, file);
+    if (strncmp(line, "ply", 3)) 
+        return triangles;
+    
+    while(1) {
+        puts(line);
+        fgets(line, 80, file);
+        
+        if(strcmp(line, "element vertex")) {
+            printf("1\n");
+            sscanf(line, "element vertex %d", &vertices);
+        }
+        if(strcmp(line, "element face")) {
+            printf("2");
+            sscanf(line, "element face %d", &faces);
+        }
+        if (strcmp(line, "end_header"))
+            break;
+    }
+    
+    for (int i =0; i < vertices; i++) {
+        float x, y, z;
+        fgets(line, 80, file);
+        sscanf(line, "%f, %f, %f", &x, &y, &z);
+        vectors.push_back(Vetor_3D(x, y, z));
+    }
+    
+    printf("vectors size = %d", vectors.size());
+
+    for (int i = 0; i < faces; i++) {
+        int n, m, l;
+
+        fgets(line, 80, file);
+        if(!sscanf(line, "3 %d %d %d", &n, &m, &l)) {
+            printf("Didnt match!\n");
+        }
+        
+        Vetor_3D v[3];
+        v[0].Copia(vectors[n]);
+        v[1].Copia(vectors[m]);
+        v[2].Copia(vectors[l]);
+
+        triangles.push_back(new Triangulo(12, v));
+    }
+
+    return triangles;
+}
+
+bool LeArquivoPLY( Cenario * hcenario, char arquivo[255]) {
+    vector<Triangulo *> triangles = read(arquivo);
+
+    for (unsigned int i = 0; i < triangles.size(); i++) {
+        hcenario->InsereObjeto(triangles[i]);
+    }
+
+    return true;
+}
 
 //Dispensa fim da linha
 void FimLinha(FILE * arqdat)
 {
   char ch;
-  while((ch=fgetc(arqdat))!=10);
+  while((ch=fgetc(arqdat))!='\n');
 }
 
 //Reconhece o token
@@ -244,3 +317,5 @@ Vetor_3D LeVetor(char *linha)
   vet.Atribui(a,b,c);
   return vet;
 }
+
+
