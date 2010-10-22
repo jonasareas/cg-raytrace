@@ -139,19 +139,20 @@ vector<Triangulo *> read(char file_name[255]) {
 
 	// Calcula extremiadades da malha de triangulos
 	for (unsigned int i = 0; i < vectors.size(); i++) {
-		Xmax = MAXI(vectors[i].X, Xmax);
-		Xmin = MINI(vectors[i].X, Xmin);	
-		Ymax = MAXI(vectors[i].Y, Ymax);
-		Ymin = MAXI(vectors[i].Y, Ymin);	
-		Zmax = MAXI(vectors[i].Z, Zmax);
-		Zmin = MINI(vectors[i].Z, Zmin);	
+		Xmax = MAXI(vectors[i].X(), Xmax);
+		Xmin = MINI(vectors[i].X(), Xmin);	
+		Ymax = MAXI(vectors[i].Y(), Ymax);
+		Ymin = MAXI(vectors[i].Y(), Ymin);	
+		Zmax = MAXI(vectors[i].Z(), Zmax);
+		Zmin = MINI(vectors[i].Z(), Zmin);	
 	}	
 
 	// Executa o viewport
 	for (unsigned int i = 0; i < vectors.size(); i++) {
-		vectors[i].Atribui( (vectors[i].X * (MAX_RES / 2*(XMax - XMin)) + (MAX_RES / 2*(XMax - XMin)) * -Xmin + MAX_RES/4),
-							(vectors[i].Y * (MAX_RES / 2*(YMax - YMin)) + (MAX_RES / 2*(YMax - YMin)) * -Ymin + MAX_RES/4),
-							(vectors[i].X * (MAX_RES / 2*(ZMax - ZMin)) + (MAX_RES / 2*(ZMax - ZMin)) * -Zmin + MAX_RES/4));	
+		vectors[i].Atribui(
+            (vectors[i].X() * (MAX_RES / 2*(Xmax - Xmin)) + (MAX_RES / 2*(Xmax - Xmin)) * -Xmin + MAX_RES/4),
+			(vectors[i].Y() * (MAX_RES / 2*(Ymax - Ymin)) + (MAX_RES / 2*(Ymax - Ymin)) * -Ymin + MAX_RES/4),
+			(vectors[i].X() * (MAX_RES / 2*(Zmax - Zmin)) + (MAX_RES / 2*(Zmax - Zmin)) * -Zmin + MAX_RES/4));	
 	}
 
     for (int i = 0; i < faces; i++) {
