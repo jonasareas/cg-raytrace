@@ -29,7 +29,8 @@ bool SalvaPPM( int linhas, int colunas, int cores, Cor_rgb pix[], char arquivo[2
 //passam a interagir com essa string. 
 //Esta função descobre se a linha é um início de um novo conjunto
 //de elementos (#token) ou se é uma linha com as informações a serem lidas.
-bool LeArquivo( Cenario * todos, Camara * cam, int *lines, int *cols, char arquivo[255]);
+bool LeArquivoDAT( Cenario * todos, Camara * cam, int *lines, int *cols, char arquivo[255]);
+bool LeArquivoPLY( Cenario * todos, char arquivo[255]);
 
  //* Token
   //* Reconhece qual é o token.

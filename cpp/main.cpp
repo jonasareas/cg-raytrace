@@ -19,43 +19,45 @@
 
 //* MAIN
 int main(){
- //* Variáveis:
-  int linhas,colunas;  // número de linhas e colunas da imagem
-  int i, j, k=0; // contadores para linhas, colunas e posição no vetor, respectivamente
-  int percent;   // percentagem da imagem processada
-  char arquivo[255]; // entrada:  arquivo.dat, saída: arquivo.ppm
-  Cor_rgb matrix[MAX_RES*MAX_RES]; // matrix de cores
+    //* Variáveis:
+    int linhas,colunas;  // número de linhas e colunas da imagem
+    int i, j, k=0; // contadores para linhas, colunas e posição no vetor, respectivamente
+    int percent;   // percentagem da imagem processada
+    char arquivo[255]; // entrada:  arquivo.dat, saída: arquivo.ppm
+    Cor_rgb matrix[MAX_RES*MAX_RES]; // matrix de cores
 
- //* Objetos:
-  Camara camara;    // cria uma câmera default
-  Cenario cenario;  // cria o cenário
-  Raio raio;        // define o raio que será usado
+    //* Objetos:
+    Camara camara;    // cria uma câmera default
+    Cenario cenario;  // cria o cenário
+    Raio raio;        // define o raio que será usado
 
- //* Código:
-  //* Leitura do Arquivo
-  if(!LeArquivo( &cenario, &camara, &linhas, &colunas, arquivo))
-	  return 1;
+    //* Código:
+    //* Leitura do Arquivo
+    if(!LeArquivoDAT( &cenario, &camara, &linhas, &colunas, arquivo))
+        return 1;
+    
+    LeArquivoPLY(&cenario, arquivo);
+    
+    //* Pega o primeiro raio  
+    raio = camara.PrimeiroRaio();
 
-  //* Pega o primeiro raio  
-  raio = camara.PrimeiroRaio();
- 
-  //* Realiza o loop
-  printf("\nPercentual de linhas computadas:\n");
-  for(i=0;i<linhas;i++)  {
-    for(j=0;j<colunas;j++) {
-      matrix[k++] = cenario.Intercepta( raio, 0 );
-      raio = camara.ProximoRaio();
+    //* Realiza o loop
+    printf("\nPercentual de linhas computadas:\n");
+    for(i=0;i<linhas;i++)  {
+        for(j=0;j<colunas;j++) {
+            matrix[k++] = cenario.Intercepta( raio, 0 );
+            raio = camara.ProximoRaio();
+        }
+        percent = (i+1)*100/linhas;
+        putc(13,stdout);
+        printf("%3d%%", percent);
     }
-    percent = (i+1)*100/linhas;
-    putc(13,stdout);
-    printf("%3d%%", percent);
-  }
-  printf("\n");
+    printf("\n");
 
-  //* Salva o arquivo com a imagem no formato .ppm
-  // SalvaPPM( linhas, colunas, 255, matrix, arquivo);
-  plota(linhas, colunas, 255, matrix);
+    //* Salva o arquivo com a imagem no formato .ppm
+    // SalvaPPM( linhas, colunas, 255, matrix, arquivo);
+    plota(linhas, colunas, 255, matrix);
 
-  return 0;
+    return 0;
 }
 END_OF_MAIN();
