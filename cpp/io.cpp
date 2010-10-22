@@ -90,6 +90,12 @@ vector<Triangulo *> read(char file_name[255]) {
     char line[80];
     int vertices;
     int faces;
+	float Xmax = -1000000;
+	float Ymax = -1000000;
+	float Zmax = -1000000;
+	float Xmin = 1000000;
+	float Ymin = 1000000;
+	float Zmin = 1000000;
     
     strcpy(file_name, "dat/tetrahedron.ply");
 
@@ -128,6 +134,25 @@ vector<Triangulo *> read(char file_name[255]) {
     }
     
     printf("vectors size = %d", vectors.size());
+
+	// ViewPort
+
+	// Calcula extremiadades da malha de triangulos
+	for (unsigned int i = 0; i < vectors.size(); i++) {
+		Xmax = MAXI(vectors[i].X, Xmax);
+		Xmin = MINI(vectors[i].X, Xmin);	
+		Ymax = MAXI(vectors[i].Y, Ymax);
+		Ymin = MAXI(vectors[i].Y, Ymin);	
+		Zmax = MAXI(vectors[i].Z, Zmax);
+		Zmin = MINI(vectors[i].Z, Zmin);	
+	}	
+
+	// Executa o viewport
+	for (unsigned int i = 0; i < vectors.size(); i++) {
+		vectors[i].Atribui( (vectors[i].X * (MAX_RES / 2*(XMax - XMin)) + (MAX_RES / 2*(XMax - XMin)) * -Xmin + MAX_RES/4),
+							(vectors[i].Y * (MAX_RES / 2*(YMax - YMin)) + (MAX_RES / 2*(YMax - YMin)) * -Ymin + MAX_RES/4),
+							(vectors[i].X * (MAX_RES / 2*(ZMax - ZMin)) + (MAX_RES / 2*(ZMax - ZMin)) * -Zmin + MAX_RES/4));	
+	}
 
     for (int i = 0; i < faces; i++) {
         int n, m, l;
@@ -212,8 +237,10 @@ void LeInfo( tok tag, Cenario *hcenario, Camara *hcamara, int *hlinhas, int *hco
   {
     case tok_SIZE:
       sscanf(linha,"%d %d",hlinhas,hcolunas);
-      *hlinhas = MINI(*hlinhas,MAX_RES);      //Para não estourar a minha
-      *hcolunas = MINI(*hcolunas,MAX_RES);    //matriz[MAX_RES*MAX_RES]
+      //*hlinhas = MINI(*hlinhas,MAX_RES);      //Para não estourar a minha
+      //*hcolunas = MINI(*hcolunas,MAX_RES);    //matriz[MAX_RES*MAX_RES]
+	*hlinhas = MAX_RES;
+	*hcolunas =  MAX_RES;
       return;
     case tok_BACKGROUND:
       cor1.Copia(LeCor(linha));

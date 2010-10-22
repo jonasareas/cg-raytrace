@@ -17,7 +17,7 @@
   //* #MAX_RES# 
   //* #MAX_PROFUNDIDADE#
 #define MAX_PROFUNDIDADE 4
-#define MAX_RES 500
+#define MAX_RES 600
 #define MAXOBJ 5000
 #define MAXLUZ 10
 
