@@ -110,20 +110,20 @@ vector<Triangulo *> read(char file_name[255]) {
     if (strncmp(line, "ply", 3)) 
         return triangles;
     
-    while(1) {
-        puts(line);
+    while (1) {
         fgets(line, 80, file);
         
-        if(strcmp(line, "element vertex")) {
-            printf("1\n");
+        if (strncmp(line, "element vertex", 14) == 0) {
             sscanf(line, "element vertex %d", &vertices);
         }
-        if(strcmp(line, "element face")) {
-            printf("2");
+        
+        if (strncmp(line, "element face", 12) == 0) {
             sscanf(line, "element face %d", &faces);
         }
-        if (strcmp(line, "end_header"))
+
+        if (strncmp(line, "end_header", 10) == 0) {
             break;
+        }
     }
     
     for (int i =0; i < vertices; i++) {
@@ -133,7 +133,7 @@ vector<Triangulo *> read(char file_name[255]) {
         vectors.push_back(Vetor_3D(x, y, z));
     }
     
-    printf("vectors size = %d", vectors.size());
+    printf("vectors size = %d\n", vectors.size());
 
 	// ViewPort
 
@@ -146,7 +146,7 @@ vector<Triangulo *> read(char file_name[255]) {
 		Zmax = MAXI(vectors[i].Z(), Zmax);
 		Zmin = MINI(vectors[i].Z(), Zmin);	
 	}	
-
+    
 	// Executa o viewport
 	for (unsigned int i = 0; i < vectors.size(); i++) {
 		vectors[i].Atribui(
@@ -170,7 +170,9 @@ vector<Triangulo *> read(char file_name[255]) {
 
         triangles.push_back(new Triangulo(12, v));
     }
-
+    
+    printf("triangles size = %d\n", triangles.size());
+    
     return triangles;
 }
 
