@@ -36,7 +36,7 @@ int main(){
     if(!LeArquivoDAT( &cenario, &camara, &linhas, &colunas, arquivo))
         return 1;
     
-    LeArquivoPLY(&cenario, arquivo);
+    // LeArquivoPLY(&cenario, arquivo);
     
     //* Pega o primeiro raio  
     raio = camara.PrimeiroRaio();

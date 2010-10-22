@@ -9,7 +9,7 @@
 #include <allegro.h>
 
 #define CORES		32			// bits de cor usados
-#define RESOL_X		800			// largura inicial
+#define RESOL_X		600			// largura inicial
 #define RESOL_Y		600			// altura inicial
 
 using namespace std;
