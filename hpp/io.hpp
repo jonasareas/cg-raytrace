@@ -5,11 +5,11 @@
 // Responsável pela gravação do arquivo de saída (.ppm).
 // _Autor_: Rodrigo P. R. de Toledo
 
-#include <cg/varios.hpp>
-#include <cg/objeto.hpp>
-#include <cg/camara.hpp>
-#include <cg/cenario.hpp>
-#include <cg/luz.hpp>
+#include "varios.hpp"
+#include "objeto.hpp"
+#include "camara.hpp"
+#include "cenario.hpp"
+#include "luz.hpp"
 
 //* GRAVAÇÃO
   //* A função SalvaPPM é usada para a geração do arquivo de saída.

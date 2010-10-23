@@ -6,7 +6,7 @@
 #ifndef __MATERIAL_HPP
 #define __MATERIAL_HPP
 
-#include <cg/varios.hpp>
+#include "varios.hpp"
 
 //* classe Material #Material#
 // Material também poderia ser chamado de textura. 

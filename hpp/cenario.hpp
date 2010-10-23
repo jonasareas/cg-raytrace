@@ -6,9 +6,9 @@
 #ifndef __cenario_HPP
 #define __cenario_HPP
 
-#include <cg/varios.hpp>
-#include <cg/objeto.hpp>
-#include <cg/luz.hpp>
+#include "varios.hpp"
+#include "objeto.hpp"
+#include "luz.hpp"
 
 //* classe Cenario #Cenario#
   //* Esta classe é a classe central do RayTrace. 
