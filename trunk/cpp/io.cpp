@@ -133,7 +133,6 @@ vector<Triangulo *> read(char file_name[255]) {
         vectors.push_back(Vetor_3D(x, y, z));
     }
     
-    printf("vectors size = %d\n", vectors.size());
 /*
 	// ViewPort
 
@@ -173,8 +172,6 @@ vector<Triangulo *> read(char file_name[255]) {
 
         triangles.push_back(new Triangulo(0, v));
     }
-    
-    printf("triangles size = %d\n", triangles.size());
     
     return triangles;
 }
