@@ -212,6 +212,8 @@ tok Token(char linha[82])
 
   if(!strcmp(linha,"TRIANGLE")) return tok_TRIANGLE;
 
+  if(!strcmp(linha,"CILINDER")) return tok_CILINDER;
+
   linha[7]=0;
   if(!strcmp(linha,"SURFACE")) return tok_SURFACE;
 
@@ -244,6 +246,7 @@ void LeInfo( tok tag, Cenario *hcenario, Camara *hcamara, int *hlinhas, int *hco
   CaixaParalela *cxp1;
   Triangulo *tri1;
   Torus *tor1;
+  Cilinder *cil1;
   int v=0;
   
   switch(tag)
@@ -300,6 +303,19 @@ void LeInfo( tok tag, Cenario *hcenario, Camara *hcamara, int *hlinhas, int *hco
       vet2.Copia(LeVetor(&linha[v]));   //Normal
       tor1 = new Torus( a, e, f, vet1, vet2 );
       hcenario->InsereObjeto( tor1 );
+      return;
+    case tok_CILINDER:
+      sscanf(linha,"%d",&a);
+      v = Dispensa(linha,1);
+      sscanf(&linha[v],"%f",&e);      //Raio
+      v += Dispensa(&linha[v],1);
+      vet1.Copia(LeVetor(&linha[v])); //Centro  
+      v += Dispensa(&linha[v],3);
+      sscanf(&linha[v],"%f",&f);      //Tamanho
+      v += Dispensa(&linha[v],1);
+      vet2.Copia(LeVetor(&linha[v]));   //Direção
+      cil1 = new Cilinder( a, e, vet1, f, vet2 );
+      hcenario->InsereObjeto( cil1 );
       return;
     case tok_BOX:
       sscanf(linha,"%d",&a);

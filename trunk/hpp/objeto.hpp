@@ -142,5 +142,22 @@ class Torus : public Objeto_3D {
     Vetor_3D Normal( Vetor_3D ponto );
 };
 
+//* classe Cilinder #Cilinder#
+class Cilinder : public Objeto_3D {
+  private:
+    float raio;
+    Vetor_3D centro;
+	float tamanho;
+	Vetor_3D direcao;
+  public:
+ //* Construtor e Destrutor
+    Cilinder( int _indice_textura, float _raio, Vetor_3D _centro, float _tamanho, Vetor_3D _direcao );
+    ~Cilinder() {};
+ //* interseção e Normal
+    float Intercepta( Raio r_vis );
+    Vetor_3D Normal( Vetor_3D ponto );
+	bool isPointOnCylinder(double, Raio);
+};
+
 
 #endif
