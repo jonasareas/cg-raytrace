@@ -1,4 +1,4 @@
-#include "../hpp/allegro.hpp"
+#include <cg/allegro.hpp>
 #include <stdio.h>
 
 void plota (int linhas, int colunas, int cores, Cor_rgb pix[]){

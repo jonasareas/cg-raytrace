@@ -6,7 +6,7 @@
 #ifndef __LUZ_HPP
 #define __LUZ_HPP
 
-#include "varios.hpp"
+#include <cg/varios.hpp>
 
 //* classe Luz #Luz#
   //* Esta classe guarda informações quanto a posição e intensidade de uma luz.

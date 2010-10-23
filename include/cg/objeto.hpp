@@ -8,8 +8,8 @@
 #ifndef __OBJ_HPP
 #define __OBJ_HPP
 
-#include "varios.hpp"
-#include "material.hpp"
+#include <cg/varios.hpp>
+#include <cg/material.hpp>
 
 //* classe Objeto_3D #Objeto_3D#
   //* Esta classe é mãe das classes Esfera, CaixaParalela e Triângulo.

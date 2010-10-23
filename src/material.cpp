@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../hpp/material.hpp"
+#include <cg/material.hpp>
 
 Material::Material(Cor_rgb _ambiente,Cor_rgb _cor_difusa,
 					Cor_rgb _indice_especular,

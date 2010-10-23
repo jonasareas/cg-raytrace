@@ -2,7 +2,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdio.h>
-#include "../hpp/objeto.hpp"
+#include <cg/objeto.hpp>
 
 Esfera::Esfera(int _indice_textura, float _raio, Vetor_3D _centro) : Objeto_3D ( _indice_textura )
 {
