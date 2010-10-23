@@ -318,3 +318,98 @@ Vetor_3D Torus::Normal( Vetor_3D ponto )
   return ponto;
 }
 
+Cilinder::Cilinder(int _indice_textura, float _raio, Vetor_3D _centro, float _tamanho, Vetor_3D _direcao) : Objeto_3D ( _indice_textura )
+{
+  raio = _raio;
+  centro.Copia( _centro );
+  tamanho = _tamanho;
+  direcao.Copia( _direcao );
+}
+
+bool Cilinder::isPointOnCylinder(double raiz, Raio r_vis) {
+
+		Vetor_3D AP;
+		float t;
+		
+		AP.Atribui( r_vis.X0() - r_vis.Dx(), r_vis.Y0() - r_vis.Dy(), r_vis.Z0() - r_vis.Dz());
+		t = AP.ProdutoEscalar(direcao);
+		
+		if(t > tamanho || t < 0)
+			return false;
+		
+		return true;
+	}
+
+float Cilinder::Intercepta( Raio r_vis )
+{
+
+	Vetor_3D AO, AOxAB, VxAB;
+	float a, b, c, delta, raiz1, raiz2;
+
+	AO.Atribui( r_vis.X0() - centro.X(), r_vis.Y0() - centro.Y(), r_vis.Z0() - centro.Z());
+	AOxAB = AO.ProdutoVetorial(direcao);
+	VxAB = r_vis.Direcao().ProdutoVetorial(direcao);
+
+	// montando a equação do 2º grau at2 + bt + c = 0
+	a = VxAB.ProdutoEscalar(VxAB);
+	b = 2 * VxAB.ProdutoEscalar(AOxAB);
+	c = AOxAB.ProdutoEscalar(AOxAB) - raio*raio;
+
+	printf("%f e %f e %f", a, b, c);
+	
+	// Calculando Delta
+	delta = SQR(b) - 4*a*c;
+
+	// Retornando t (se não existir t retornar valor negativo que será ignorado)
+	if ( delta < 1 )
+		return(-1);
+	  
+	delta = (float)sqrt(delta);
+	a*=2;
+	raiz1 = ( -b - delta ) / a;
+	raiz2 = ( -b + delta ) / a;
+
+	if(raiz1 <= 0 && raiz2 <= 0)
+	{
+		return -1;
+	}
+	else if(raiz1 >= 0 && raiz2 >= 0)
+	{
+		puts("CCCCCCCCCCCC");
+		if(isPointOnCylinder(raiz1, r_vis))
+		{
+			puts("BBBBBBBBBBBBB");
+			if(isPointOnCylinder(raiz2, r_vis))
+			{
+				puts("AAAAAAAAAAAAAAAA");
+				return (MINI(raiz1,raiz2));
+			}
+			else
+			{
+				return raiz1;
+			}
+		}
+		else if(isPointOnCylinder(raiz2, r_vis))
+		{
+			return raiz2;
+		}
+		else
+		{
+			return -1;
+		}
+	}
+	else
+	{
+		puts("DDDDDDDDDDDDDDDDDDD");
+		return (MAXI(raiz1, raiz2));
+	}
+	
+}
+
+Vetor_3D Cilinder::Normal( Vetor_3D ponto )
+{
+  ponto.Subtrai(centro);
+  ponto.Normaliza();
+  return ponto;
+}
+
