@@ -9,13 +9,13 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "../hpp/varios.hpp"
-#include "../hpp/objeto.hpp"
-#include "../hpp/camara.hpp"
-#include "../hpp/cenario.hpp"
-#include "../hpp/luz.hpp"
-#include "../hpp/io.hpp"
-#include "../hpp/allegro.hpp"
+#include <cg/varios.hpp>
+#include <cg/objeto.hpp>
+#include <cg/camara.hpp>
+#include <cg/cenario.hpp>
+#include <cg/luz.hpp>
+#include <cg/io.hpp>
+#include <cg/allegro.hpp>
 
 //* MAIN
 int main(){
