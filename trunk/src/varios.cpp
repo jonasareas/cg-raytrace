@@ -1,5 +1,5 @@
 #include <math.h>
-#include "../hpp/varios.hpp"
+#include <cg/varios.hpp>
 
 Cor_rgb::Cor_rgb(int _r, int _g, int _b)
 {

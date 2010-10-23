@@ -1,5 +1,5 @@
 #include <math.h>
-#include "../hpp/cenario.hpp"
+#include <cg/cenario.hpp>
 
 Cenario::Cenario()
 {

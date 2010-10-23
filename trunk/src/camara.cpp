@@ -1,5 +1,5 @@
 #include <math.h>
-#include "../hpp/camara.hpp"
+#include <cg/camara.hpp>
 
 Camara::Camara( )
 {
