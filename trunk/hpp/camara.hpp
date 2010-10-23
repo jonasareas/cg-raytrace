@@ -6,7 +6,7 @@
 #ifndef __CAMERA_HPP
 #define __CAMERA_HPP
 
-#include <cg/varios.hpp>
+#include "varios.hpp"
 
 //* classe Camara #Camara#
 //Esta classe guarda informações quanto posição da câmera, a tela
