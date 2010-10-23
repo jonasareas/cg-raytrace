@@ -221,6 +221,8 @@ tok Token(char linha[82])
   linha[5]=0;
   if(!strcmp(linha,"LIGHT")) return tok_LIGHT;
 
+  if(!strcmp(linha,"TORUS")) return tok_TORUS;
+
   linha[4]=0;
   if(!strcmp(linha,"SIZE")) return tok_SIZE;
 
@@ -241,6 +243,7 @@ void LeInfo( tok tag, Cenario *hcenario, Camara *hcamara, int *hlinhas, int *hco
   Esfera *esf1;
   CaixaParalela *cxp1;
   Triangulo *tri1;
+  Torus *tor1;
   int v=0;
   
   switch(tag)
@@ -284,6 +287,19 @@ void LeInfo( tok tag, Cenario *hcenario, Camara *hcamara, int *hlinhas, int *hco
       vet1.Copia(LeVetor(&linha[v])); //Centro  
       esf1 = new Esfera( a, e, vet1 );
       hcenario->InsereObjeto( esf1 );
+      return;
+    case tok_TORUS:
+      sscanf(linha,"%d",&a);
+      v = Dispensa(linha,1);
+      sscanf(&linha[v],"%f",&e);      //Raio Total
+      v += Dispensa(&linha[v],1);
+      sscanf(&linha[v],"%f",&f);      //Raio do tubo
+      v += Dispensa(&linha[v],1);
+      vet1.Copia(LeVetor(&linha[v])); //Centro  
+      v += Dispensa(&linha[v],3);
+      vet2.Copia(LeVetor(&linha[v]));   //Normal
+      tor1 = new Torus( a, e, f, vet1, vet2 );
+      hcenario->InsereObjeto( tor1 );
       return;
     case tok_BOX:
       sscanf(linha,"%d",&a);

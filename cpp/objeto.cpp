@@ -293,3 +293,28 @@ Vetor_3D Triangulo::Normal( Vetor_3D ponto )
   temp.Atribui( -normal.X(), -normal.Y(), -normal.Z() );
   return temp; 
 }
+
+Torus::Torus(int _indice_textura, float _raio, float _raioTubo, Vetor_3D _centro, Vetor_3D _normal) : Objeto_3D ( _indice_textura )
+{
+  raio = _raio;
+  raioTubo = _raioTubo;
+  centro.Copia( _centro );
+  normal.Copia( _normal );
+}
+
+float Torus::Intercepta( Raio r_vis )
+{
+
+ // TODO
+
+  return -1;
+
+}
+
+Vetor_3D Torus::Normal( Vetor_3D ponto )
+{
+  ponto.Subtrai(centro);
+  ponto.Normaliza();
+  return ponto;
+}
+

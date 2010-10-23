@@ -126,5 +126,21 @@ class CaixaParalela : public Objeto_3D {
     Vetor_3D Normal( Vetor_3D ponto );
 };
 
+//* classe Torus #Torus#
+class Torus : public Objeto_3D {
+  private:
+    float raio;
+	float raioTubo;
+    Vetor_3D centro;
+	Vetor_3D normal;
+  public:
+ //* Construtor e Destrutor
+    Torus( int _indice_textura, float _raio, float _raioTubo, Vetor_3D _centro, Vetor_3D _normal );
+    ~Torus() {};
+ //* interseção e Normal
+    float Intercepta( Raio r_vis );
+    Vetor_3D Normal( Vetor_3D ponto );
+};
+
 
 #endif
