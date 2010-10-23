@@ -97,8 +97,6 @@ vector<Triangulo *> read(char file_name[255]) {
 	float Ymin = 1000000;
 	float Zmin = 1000000;
     
-    strcpy(file_name, "dat/input.ply");
-
     vector<Vetor_3D> vectors;
     vector<Triangulo *> triangles;
 
@@ -115,10 +113,12 @@ vector<Triangulo *> read(char file_name[255]) {
         
         if (strncmp(line, "element vertex", 14) == 0) {
             sscanf(line, "element vertex %d", &vertices);
+            printf("vertices = %d\n", vertices);
         }
         
         if (strncmp(line, "element face", 12) == 0) {
             sscanf(line, "element face %d", &faces);
+            printf("faces = %d\n", faces);
         }
 
         if (strncmp(line, "end_header", 10) == 0) {
@@ -134,7 +134,7 @@ vector<Triangulo *> read(char file_name[255]) {
     }
     
     printf("vectors size = %d\n", vectors.size());
-
+/*
 	// ViewPort
 
 	// Calcula extremiadades da malha de triangulos
@@ -156,13 +156,14 @@ vector<Triangulo *> read(char file_name[255]) {
 			(vectors[i].Z() * (MAX_RES / (2*(Zmax - Zmin))) + ((MAX_RES / (2*(Zmax - Zmin))) * -Zmin + MAX_RES/4)));	
 		printf("%f %f %f\n", vectors[i].X(), vectors[i].Y(), vectors[i].Z());
 	}
-
+*/
     for (int i = 0; i < faces; i++) {
         int n, m, l;
 
         fgets(line, 80, file);
         if(!sscanf(line, "3 %d %d %d", &n, &m, &l)) {
             printf("Didnt match!\n");
+            continue;
         }
 
         Vetor_3D v[3];
@@ -170,7 +171,7 @@ vector<Triangulo *> read(char file_name[255]) {
         v[1].Copia(vectors[m]);
         v[2].Copia(vectors[l]);
 
-        triangles.push_back(new Triangulo(12, v));
+        triangles.push_back(new Triangulo(0, v));
     }
     
     printf("triangles size = %d\n", triangles.size());
@@ -179,6 +180,13 @@ vector<Triangulo *> read(char file_name[255]) {
 }
 
 bool LeArquivoPLY( Cenario * hcenario, char arquivo[255]) {
+    printf("\nNome do arquivo de entrada (sem a extensao .ply) ou quit para sair:");
+    scanf("%s", arquivo);
+    
+    if (strcmp(arquivo, "quit") == 0) return false;
+
+    strcat(arquivo,".ply");
+
     vector<Triangulo *> triangles = read(arquivo);
 
     for (unsigned int i = 0; i < triangles.size(); i++) {
