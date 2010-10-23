@@ -97,7 +97,7 @@ vector<Triangulo *> read(char file_name[255]) {
 	float Ymin = 1000000;
 	float Zmin = 1000000;
     
-    strcpy(file_name, "dat/tetrahedron.ply");
+    strcpy(file_name, "dat/input.ply");
 
     vector<Vetor_3D> vectors;
     vector<Triangulo *> triangles;
@@ -129,7 +129,7 @@ vector<Triangulo *> read(char file_name[255]) {
     for (int i =0; i < vertices; i++) {
         float x, y, z;
         fgets(line, 80, file);
-        sscanf(line, "%f, %f, %f", &x, &y, &z);
+        sscanf(line, "%f %f %f", &x, &y, &z);
         vectors.push_back(Vetor_3D(x, y, z));
     }
     
@@ -142,17 +142,19 @@ vector<Triangulo *> read(char file_name[255]) {
 		Xmax = MAXI(vectors[i].X(), Xmax);
 		Xmin = MINI(vectors[i].X(), Xmin);	
 		Ymax = MAXI(vectors[i].Y(), Ymax);
-		Ymin = MAXI(vectors[i].Y(), Ymin);	
+		Ymin = MINI(vectors[i].Y(), Ymin);	
 		Zmax = MAXI(vectors[i].Z(), Zmax);
 		Zmin = MINI(vectors[i].Z(), Zmin);	
-	}	
-    
+		printf("%f %f %f\n", vectors[i].X(), vectors[i].Y(), vectors[i].Z());
+	}
+
 	// Executa o viewport
 	for (unsigned int i = 0; i < vectors.size(); i++) {
 		vectors[i].Atribui(
-            (vectors[i].X() * (MAX_RES / 2*(Xmax - Xmin)) + (MAX_RES / 2*(Xmax - Xmin)) * -Xmin + MAX_RES/4),
-			(vectors[i].Y() * (MAX_RES / 2*(Ymax - Ymin)) + (MAX_RES / 2*(Ymax - Ymin)) * -Ymin + MAX_RES/4),
-			(vectors[i].X() * (MAX_RES / 2*(Zmax - Zmin)) + (MAX_RES / 2*(Zmax - Zmin)) * -Zmin + MAX_RES/4));	
+			(vectors[i].X() * (MAX_RES / (2*(Xmax - Xmin))) + ((MAX_RES / (2*(Xmax - Xmin))) * -Xmin + MAX_RES/4)),
+			(vectors[i].Y() * (MAX_RES / (2*(Ymax - Ymin))) + ((MAX_RES / (2*(Ymax - Ymin))) * -Ymin + MAX_RES/4)),
+			(vectors[i].Z() * (MAX_RES / (2*(Zmax - Zmin))) + ((MAX_RES / (2*(Zmax - Zmin))) * -Zmin + MAX_RES/4)));	
+		printf("%f %f %f\n", vectors[i].X(), vectors[i].Y(), vectors[i].Z());
 	}
 
     for (int i = 0; i < faces; i++) {
@@ -162,7 +164,7 @@ vector<Triangulo *> read(char file_name[255]) {
         if(!sscanf(line, "3 %d %d %d", &n, &m, &l)) {
             printf("Didnt match!\n");
         }
-        
+
         Vetor_3D v[3];
         v[0].Copia(vectors[n]);
         v[1].Copia(vectors[m]);
