@@ -332,12 +332,12 @@ Cilinder::Cilinder(int _indice_textura, float _raio, Vetor_3D _centro, float _ta
     direcao.Copia( _direcao );
 }
 
-bool Cilinder::isPointOnCylinder(double raiz, Raio r_vis) {
+bool Cilinder::isPointOnCylinder(float raiz, Raio r_vis) {
 
     Vetor_3D AP;
     float t;
 
-    AP.Atribui( r_vis.X0() - r_vis.Dx(), r_vis.Y0() - r_vis.Dy(), r_vis.Z0() - r_vis.Dz());
+    AP.Atribui((r_vis.X0() + raiz*r_vis.Dx()) - centro.X(), (r_vis.Y0() + raiz*r_vis.Dy()) - centro.Y(), (r_vis.Z0() + raiz*r_vis.Dz()) - centro.Z());
     t = AP.ProdutoEscalar(direcao);
 
     if(t > tamanho || t < 0)
@@ -361,8 +361,6 @@ float Cilinder::Intercepta( Raio r_vis )
     b = 2 * VxAB.ProdutoEscalar(AOxAB);
     c = AOxAB.ProdutoEscalar(AOxAB) - raio*raio;
 
-    printf("%f e %f e %f", a, b, c);
-
     // Calculando Delta
     delta = SQR(b) - 4*a*c;
 
@@ -381,13 +379,10 @@ float Cilinder::Intercepta( Raio r_vis )
     }
     else if(raiz1 >= 0 && raiz2 >= 0)
     {
-        puts("CCCCCCCCCCCC");
         if(isPointOnCylinder(raiz1, r_vis))
         {
-            puts("BBBBBBBBBBBBB");
             if(isPointOnCylinder(raiz2, r_vis))
             {
-                puts("AAAAAAAAAAAAAAAA");
                 return (MINI(raiz1,raiz2));
             }
             else
@@ -406,7 +401,6 @@ float Cilinder::Intercepta( Raio r_vis )
     }
     else
     {
-        puts("DDDDDDDDDDDDDDDDDDD");
         return (MAXI(raiz1, raiz2));
     }
 
