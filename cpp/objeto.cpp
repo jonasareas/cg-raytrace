@@ -303,25 +303,40 @@ Torus::Torus(int _indice_textura, float _raio, float _raioTubo, Vetor_3D _centro
 
 float Torus::Intercepta( Raio r_vis )
 {
-
     // TODO
-
     return -1;
-
 }
 
 Vetor_3D Torus::Normal( Vetor_3D ponto )
 {
-    ponto.Subtrai(centro);
-    ponto.Normaliza();
+	// TODO
     return ponto;
 }
 
 Vetor_3D Cilinder::Normal( Vetor_3D ponto )
 {
-    ponto.Subtrai(centro);
-    ponto.Normaliza();
-    return ponto;
+
+	Vetor_3D AB, AP, center, normal, fim;
+	float ABdotAB;
+
+	fim.Atribui(centro.X() + (direcao.X() * tamanho), centro.Y() + (direcao.Y() * tamanho), centro.Z() + (direcao.Z() * tamanho));
+	fim.Subtrai(centro);
+	AB.Copia(fim);
+	ABdotAB = AB.ProdutoEscalar(AB);		
+
+	ponto.Subtrai(centro);
+	AP.Copia(ponto);
+	float t = AB.ProdutoEscalar(AP) / ABdotAB;
+	center.Copia(centro);
+	AB.Multiplica(t);
+	center.Soma(AB);
+
+	ponto.Subtrai(center);
+	normal.Copia(ponto);
+	normal.Normaliza();
+	
+	return normal;
+
 }
 
 Cilinder::Cilinder(int _indice_textura, float _raio, Vetor_3D _centro, float _tamanho, Vetor_3D _direcao) : Objeto_3D ( _indice_textura )
