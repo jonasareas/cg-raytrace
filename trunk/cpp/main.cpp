@@ -47,7 +47,6 @@ int main(){
         printf("\nPercentual de linhas computadas:\n");
         for(i=0;i<linhas;i++)  {
             for(j=0;j<colunas;j++) {
-                printf("k= %d\n", k);
                 matrix[k++] = cenario.Intercepta( raio, 0 );
                 raio = camara.ProximoRaio();
             }

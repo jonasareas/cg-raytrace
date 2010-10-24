@@ -90,13 +90,13 @@ vector<Triangulo *> read(char file_name[255]) {
     char line[80];
     int vertices;
     int faces;
-	float Xmax = -1000000;
+/*	float Xmax = -1000000;
 	float Ymax = -1000000;
 	float Zmax = -1000000;
 	float Xmin = 1000000;
 	float Ymin = 1000000;
 	float Zmin = 1000000;
-    
+*/    
     vector<Vetor_3D> vectors;
     vector<Triangulo *> triangles;
 
