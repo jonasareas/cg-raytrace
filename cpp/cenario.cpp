@@ -4,6 +4,7 @@
 Cenario::Cenario()
 {
   total = 0;
+  total_luzes = 0;
   total_materiais = 0;
   cor_de_fundo.Atribui(60,60,60);
 }
