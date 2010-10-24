@@ -53,11 +53,14 @@ int main(){
         printf("%3d%%", percent);
     }
     printf("\n");
+    
+    while(1) {
+        //* Salva o arquivo com a imagem no formato .ppm
+        // SalvaPPM( linhas, colunas, 255, matrix, arquivo);
+        plota(linhas, colunas, 255, matrix);
 
-    //* Salva o arquivo com a imagem no formato .ppm
-    // SalvaPPM( linhas, colunas, 255, matrix, arquivo);
-    plota(linhas, colunas, 255, matrix);
-
+        
+    }
     return 0;
 }
 END_OF_MAIN();
