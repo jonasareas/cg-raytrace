@@ -38,28 +38,50 @@ int main(){
     
     LeArquivoPLY(&cenario, arquivo);
     
-    //* Pega o primeiro raio  
-    raio = camara.PrimeiroRaio();
-
-    //* Realiza o loop
-    printf("\nPercentual de linhas computadas:\n");
-    for(i=0;i<linhas;i++)  {
-        for(j=0;j<colunas;j++) {
-            matrix[k++] = cenario.Intercepta( raio, 0 );
-            raio = camara.ProximoRaio();
-        }
-        percent = (i+1)*100/linhas;
-        putc(13,stdout);
-        printf("%3d%%", percent);
-    }
-    printf("\n");
-    
     while(1) {
+
+        //* Pega o primeiro raio  
+        raio = camara.PrimeiroRaio();
+
+        //* Realiza o loop
+        printf("\nPercentual de linhas computadas:\n");
+        for(i=0;i<linhas;i++)  {
+            for(j=0;j<colunas;j++) {
+                printf("k= %d\n", k);
+                matrix[k++] = cenario.Intercepta( raio, 0 );
+                raio = camara.ProximoRaio();
+            }
+            percent = (i+1)*100/linhas;
+            putc(13,stdout);
+            printf("%3d%%", percent);
+        }
+        printf("\n");
+
         //* Salva o arquivo com a imagem no formato .ppm
         // SalvaPPM( linhas, colunas, 255, matrix, arquivo);
         plota(linhas, colunas, 255, matrix);
-
         
+        float x, y, z;
+        char d[10];
+
+        printf("Deseja reposicionar a camera? [s,n]\n");
+        scanf("%s", d);
+        if (d[0] == 'n') break;
+
+        printf("Entre com a nova posicao da camera (formato=%%f %%f %%f):");
+        scanf("%f %f %f", &x, &y, &z);
+        Vetor_3D pos(x, y, z);
+
+        printf("Entre com a nova direção da camera (formato=%%f %%f %%f):");
+        scanf("%f %f %f", &x, &y, &z);
+        Vetor_3D dir(x, y, z);
+
+        printf("Entre com a novo olho da camera (formato=%%f %%f %%f):");
+        scanf("%f %f %f", &x, &y, &z);
+        Vetor_3D olho(x, y, z);
+
+        camara.Atribui(pos, dir, olho);
+        k = 0;
     }
     return 0;
 }
