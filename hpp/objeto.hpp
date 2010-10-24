@@ -156,7 +156,7 @@ class Cilinder : public Objeto_3D {
  //* interseção e Normal
     float Intercepta( Raio r_vis );
     Vetor_3D Normal( Vetor_3D ponto );
-	bool isPointOnCylinder(double, Raio);
+	bool isPointOnCylinder(float, Raio);
 };
 
 
