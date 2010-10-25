@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 
 #include <guichan.hpp>
 #include <guichan/allegro.hpp>
@@ -22,7 +23,7 @@ private:
     Camara *    camera;
     Cenario *   scene;
     BITMAP *    buffer;
-	CaixaParalela *box; //Deve se tornar uma matriz, mas aí eu me emblo todo... Amanhã a gnt vê isso junto!
+
 public:
     RayTracer();
     ~RayTracer();
@@ -46,8 +47,8 @@ RayTracer::RayTracer() {
     camera = new Camara();
     scene = new Cenario();
     
-    LeArquivoDAT(scene, camera, &height, &width, &box, name);
-    LeArquivoPLY(scene, &box, name);
+    LeArquivoDAT(scene, camera, &height, &width, name);
+    LeArquivoPLY(scene, name);
     
     buffer = NULL;
 }
@@ -74,15 +75,6 @@ void RayTracer::setCamera(Vetor_3D position, Vetor_3D direction, Vetor_3D eye) {
     camera->Atribui(position, direction, eye);
 }
 
-bool interceptaBoundingBox(CaixaParalela *box, Raio r_vis) {
-
-	// FAZER PARA CADA BOUNDING BOX
-	if (box->Intercepta(r_vis) != -1)
-		return true;
-
-	return false;
-}
-
 void RayTracer::run() {
     buffer = create_bitmap(width, height);
     
@@ -90,8 +82,9 @@ void RayTracer::run() {
     for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++) {
 			Cor_rgb color;
-			if (interceptaBoundingBox(box, ray))
-           		color = scene->Intercepta(ray, 0);
+			std::vector<CaixaParalela *> bounding_boxes = scene->interceptaBoundingBox(ray);
+			if (bounding_boxes.size() > 0)
+           		color = scene->Intercepta(bounding_boxes, ray, 0);
 			else
 				color = Cor_rgb(110, 110, 110);
             putpixel(buffer, j, height-i, RayTracer::makeColor(color));

@@ -11,11 +11,14 @@
 #include "varios.hpp"
 #include "material.hpp"
 
+class CaixaParalela;
+
 //* classe Objeto_3D #Objeto_3D#
   //* Esta classe é mãe das classes Esfera, CaixaParalela e Triângulo.
 class Objeto_3D {
   protected:
     int indice_textura;
+	CaixaParalela *box;
   public:
  //* Construtor e Destrutor
     Objeto_3D(int _indice_textura) : indice_textura( _indice_textura ) {};
@@ -25,6 +28,8 @@ class Objeto_3D {
     virtual Vetor_3D Normal( Vetor_3D ponto ) = 0;
  //* Função inline que retorna qual é a textura
     inline int Indice_textura() { return indice_textura; };
+	inline CaixaParalela *BoundingBox() { return box; };
+	inline void setBoundingBox(CaixaParalela *new_box ) { box = new_box; };
 };
 
 //* classe Esfera #Esfera#

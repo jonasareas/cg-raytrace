@@ -1,4 +1,5 @@
 #include <math.h>
+#include <vector>
 #include "../hpp/cenario.hpp"
 
 Cenario::Cenario()
@@ -6,6 +7,7 @@ Cenario::Cenario()
   total = 0;
   total_luzes = 0;
   total_materiais = 0;
+  total_boxes = 0;
   cor_de_fundo.Atribui(60,60,60);
 }
 
@@ -40,14 +42,26 @@ bool Cenario::InsereObjeto( Objeto_3D *mais_um )
   return true;
 }
 
-bool Cenario::InsereMaterial( Material *mais_uma )
+bool Cenario::InsereMaterial( Material *mais_um )
 {
   if( total_materiais+1 == MAXOBJ )
     return false;
   
-  materiais[total_materiais] = mais_uma;
+  materiais[total_materiais] = mais_um;
 
   total_materiais++;
+
+  return true;
+}
+
+bool Cenario::InsereBoundingBox( CaixaParalela *mais_uma )
+{
+  if( total_boxes+1 == MAXOBJ )
+    return false;
+  
+  box[total_boxes] = mais_uma;
+
+  total_boxes++;
 
   return true;
 }
@@ -67,7 +81,7 @@ bool Cenario::InsereLuz( Luz *mais_uma )
 //------------------------------------------//
 // Correspondente ao TRACE da transparência //
 //------------------------------------------//
-Cor_rgb Cenario::Intercepta( Raio r_vis, int profundidade )
+Cor_rgb Cenario::Intercepta( std::vector<CaixaParalela *> bounding_boxes, Raio r_vis, int profundidade )
 {
   float t=-1, t_atual, t_min;
   int i=0, objeto_proximo=-1;
@@ -87,19 +101,23 @@ Cor_rgb Cenario::Intercepta( Raio r_vis, int profundidade )
 
   for(i=0;i<total;i++)
   {
-    t_atual = objetos[i]->Intercepta( r_vis );
-    if ( (t_atual > t_min) && ( objeto_proximo==-1  ||  t_atual < t ) )
-    {
-      t = t_atual;
-      objeto_proximo = i;
-    }
+	for (unsigned int k = 0; k < bounding_boxes.size(); k++) {
+		if (objetos[i]->BoundingBox() == bounding_boxes[k]) {
+			t_atual = objetos[i]->Intercepta( r_vis );
+			if ( (t_atual > t_min) && ( objeto_proximo==-1  ||  t_atual < t ) )
+			{
+			  t = t_atual;
+			  objeto_proximo = i;
+			}
+		}
+	 }
   }
 
   //Houve interseção? (sem interseção: objeto_proximo = -1)
   if (objeto_proximo>=0)
   {
     ponto = r_vis.QualPonto(t);
-    return( CorDoPonto( objeto_proximo, ponto, r_vis, profundidade ) );
+    return( CorDoPonto( bounding_boxes, objeto_proximo, ponto, r_vis, profundidade ) );
   }
   else
     return( cor_de_fundo );
@@ -109,7 +127,7 @@ Cor_rgb Cenario::Intercepta( Raio r_vis, int profundidade )
 //------------------------------------------//
 // Correspondente ao SHADE da transparência // 
 //------------------------------------------//
-Cor_rgb Cenario::CorDoPonto(int num_obj, Vetor_3D ponto, Raio r_vis, int profundidade)
+Cor_rgb Cenario::CorDoPonto(std::vector<CaixaParalela *> bounding_boxes, int num_obj, Vetor_3D ponto, Raio r_vis, int profundidade)
 {
   int i, j=0, bool_sombra, ind_textura;
   float nl, t, rv, coef_reflexao, nv;
@@ -193,10 +211,21 @@ Cor_rgb Cenario::CorDoPonto(int num_obj, Vetor_3D ponto, Raio r_vis, int profund
      reflexao_vista.Subtrai(direcao_vista); // 
      reflexao_vista.Soma(ponto);
      reflexao.Atribui(ponto,reflexao_vista);
-     intermediaria = Intercepta( reflexao, profundidade + 1 );
+     intermediaria = Intercepta( bounding_boxes, reflexao, profundidade + 1 );
      intermediaria.Multiplica( coef_reflexao );
      final.Soma(intermediaria);
   }
 
   return final;
+}
+
+std::vector<CaixaParalela *> Cenario::interceptaBoundingBox(Raio r_vis) {
+
+	std::vector<CaixaParalela *> bounding_boxes;
+
+	for (int i =0; i < total_boxes; i++) {
+		if (box[i]->Intercepta(r_vis) != -1)
+			bounding_boxes.push_back(box[i]);
+	}
+	return bounding_boxes;
 }
