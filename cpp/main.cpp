@@ -93,7 +93,7 @@ void RayTracer::run() {
 			if (interceptaBoundingBox(box, ray))
            		color = scene->Intercepta(ray, 0);
 			else
-				color = Cor_rgb(60, 60, 60);
+				color = Cor_rgb(110, 110, 110);
             putpixel(buffer, j, height-i, RayTracer::makeColor(color));
             ray = camera->ProximoRaio();
         }
