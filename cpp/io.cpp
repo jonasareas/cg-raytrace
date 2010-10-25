@@ -42,7 +42,7 @@ bool SalvaPPM( int linhas, int colunas, int cores, Cor_rgb pix[], char arquivo[2
   return true;
 }
 
-bool LeArquivoDAT( Cenario * hcenario, Camara * hcamara, int *hlinhas, int *hcolunas, char arquivo[255])
+bool LeArquivoDAT( Cenario * hcenario, Camara * hcamara, int *hlinhas, int *hcolunas, CaixaParalela **box, char arquivo[255])
 {
   FILE * arqdat;
   tok  tag;
@@ -78,7 +78,7 @@ bool LeArquivoDAT( Cenario * hcenario, Camara * hcamara, int *hlinhas, int *hcol
       tag = Token(&linha[1]);  //já dispenso a #
     else
       if (linha[0]!=';' && linha[0]!='!')
-        LeInfo( tag, hcenario, hcamara, hlinhas, hcolunas, linha );
+        LeInfo( tag, hcenario, hcamara, hlinhas, hcolunas, box, linha );
   }
  
   fclose(arqdat);
@@ -86,17 +86,17 @@ bool LeArquivoDAT( Cenario * hcenario, Camara * hcamara, int *hlinhas, int *hcol
   return true;
 }
 
-vector<Triangulo *> read(char file_name[255]) {
+vector<Triangulo *> read(CaixaParalela **box, char file_name[255]) {
     char line[80];
     int vertices;
     int faces;
-/*	float Xmax = -1000000;
+	float Xmax = -1000000;
 	float Ymax = -1000000;
 	float Zmax = -1000000;
 	float Xmin = 1000000;
 	float Ymin = 1000000;
 	float Zmin = 1000000;
-*/    
+    
     vector<Vetor_3D> vectors;
     vector<Triangulo *> triangles;
 
@@ -133,8 +133,6 @@ vector<Triangulo *> read(char file_name[255]) {
         vectors.push_back(Vetor_3D(x, y, z));
     }
     
-/*
-	// ViewPort
 
 	// Calcula extremiadades da malha de triangulos
 	for (unsigned int i = 0; i < vectors.size(); i++) {
@@ -144,9 +142,9 @@ vector<Triangulo *> read(char file_name[255]) {
 		Ymin = MINI(vectors[i].Y(), Ymin);	
 		Zmax = MAXI(vectors[i].Z(), Zmax);
 		Zmin = MINI(vectors[i].Z(), Zmin);	
-		printf("%f %f %f\n", vectors[i].X(), vectors[i].Y(), vectors[i].Z());
 	}
 
+/*
 	// Executa o viewport
 	for (unsigned int i = 0; i < vectors.size(); i++) {
 		vectors[i].Atribui(
@@ -172,11 +170,17 @@ vector<Triangulo *> read(char file_name[255]) {
 
         triangles.push_back(new Triangulo(0, v));
     }
+
+	Vetor_3D vet1, vet2;
+
+    vet1.Atribui(Xmin, Ymin, Zmin);
+    vet2.Atribui(Xmax, Ymax, Zmax);
+    *box = new CaixaParalela(0, vet1, vet2);
     
     return triangles;
 }
 
-bool LeArquivoPLY( Cenario * hcenario, char arquivo[255]) {
+bool LeArquivoPLY( Cenario * hcenario, CaixaParalela **box, char arquivo[255]) {
     printf("\nNome do arquivo de entrada (sem a extensao .ply) ou quit para sair:");
     scanf("%s", arquivo);
     
@@ -184,7 +188,7 @@ bool LeArquivoPLY( Cenario * hcenario, char arquivo[255]) {
 
     strcat(arquivo,".ply");
 
-    vector<Triangulo *> triangles = read(arquivo);
+    vector<Triangulo *> triangles = read(box, arquivo);
 
     for (unsigned int i = 0; i < triangles.size(); i++) {
         hcenario->InsereObjeto(triangles[i]);
@@ -234,7 +238,7 @@ tok Token(char linha[82])
   return tok_DESCONHECIDO;
 }
 
-void LeInfo( tok tag, Cenario *hcenario, Camara *hcamara, int *hlinhas, int *hcolunas, char *linha )
+void LeInfo( tok tag, Cenario *hcenario, Camara *hcamara, int *hlinhas, int *hcolunas, CaixaParalela **box, char *linha )
 {
   int a,b,c;
   float e, f, g;
@@ -290,6 +294,9 @@ void LeInfo( tok tag, Cenario *hcenario, Camara *hcamara, int *hlinhas, int *hco
       vet1.Copia(LeVetor(&linha[v])); //Centro  
       esf1 = new Esfera( a, e, vet1 );
       hcenario->InsereObjeto( esf1 );
+      vet2.Atribui(vet1.X()-e,vet1.Y()-e,vet1.Z()-e);
+      vet3.Atribui(vet1.X()+e,vet1.Y()+e,vet1.Z()+e);
+      *box = new CaixaParalela(a, vet2, vet3);
       return;
     case tok_TORUS:
       sscanf(linha,"%d",&a);
@@ -309,13 +316,39 @@ void LeInfo( tok tag, Cenario *hcenario, Camara *hcamara, int *hlinhas, int *hco
       v = Dispensa(linha,1);
       sscanf(&linha[v],"%f",&e);      //Raio
       v += Dispensa(&linha[v],1);
-      vet1.Copia(LeVetor(&linha[v])); //Centro  
+      vet1.Copia(LeVetor(&linha[v])); //Centro do disco inicial
       v += Dispensa(&linha[v],3);
       sscanf(&linha[v],"%f",&f);      //Tamanho
       v += Dispensa(&linha[v],1);
       vet2.Copia(LeVetor(&linha[v]));   //Direção
       cil1 = new Cilinder( a, e, vet1, f, vet2 );
       hcenario->InsereObjeto( cil1 );
+
+      float x1, x2, y1, y2, z1, z2;
+      if (vet2.X() == 0) {
+	 x1 = e;
+	 x2 = 2 * e; 
+      } else { 
+	 x1 = 0; 
+	 x2 = f * vet2.X();
+      }
+      if (vet2.Y() == 0) {
+	 y1 = e;
+	 y2 = 2 * e; 
+      } else { 
+	 y1 = 0;  
+	 y2 = f * vet2.Y();
+      }
+      if (vet2.Z() == 0) {
+	 z1 = e;
+	 z2 = 2 * e;
+      } else { 
+	 z1 = 0; 
+	 z2 = f * vet2.Z();
+      }
+      vet1.Atribui(vet1.X() - x1, vet1.Y() - y1, vet1.Z() - z1);
+      vet2.Atribui(vet1.X() + x2, vet1.Y() + y2, vet1.Z() + z2);
+      *box = new CaixaParalela(a, vet1, vet2);
       return;
     case tok_BOX:
       sscanf(linha,"%d",&a);
@@ -325,6 +358,7 @@ void LeInfo( tok tag, Cenario *hcenario, Camara *hcamara, int *hlinhas, int *hco
       vet2.Copia(LeVetor(&linha[v])); //canto superior direito
       cxp1 = new CaixaParalela( a, vet1, vet2 );
       hcenario->InsereObjeto( cxp1 );
+      *box = new CaixaParalela(a, vet1, vet2);
       return; 
     case tok_TRIANGLE:
       sscanf(linha,"%d",&a);

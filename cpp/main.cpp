@@ -22,6 +22,7 @@ private:
     Camara *    camera;
     Cenario *   scene;
     BITMAP *    buffer;
+	CaixaParalela *box; //Deve se tornar uma matriz, mas aí eu me emblo todo... Amanhã a gnt vê isso junto!
 public:
     RayTracer();
     ~RayTracer();
@@ -45,8 +46,8 @@ RayTracer::RayTracer() {
     camera = new Camara();
     scene = new Cenario();
     
-    LeArquivoDAT(scene, camera, &height, &width, name);
-    LeArquivoPLY(scene, name);
+    LeArquivoDAT(scene, camera, &height, &width, &box, name);
+    LeArquivoPLY(scene, &box, name);
     
     buffer = NULL;
 }
@@ -73,13 +74,26 @@ void RayTracer::setCamera(Vetor_3D position, Vetor_3D direction, Vetor_3D eye) {
     camera->Atribui(position, direction, eye);
 }
 
+bool interceptaBoundingBox(CaixaParalela *box, Raio r_vis) {
+
+	// FAZER PARA CADA BOUNDING BOX
+	if (box->Intercepta(r_vis) != -1)
+		return true;
+
+	return false;
+}
+
 void RayTracer::run() {
     buffer = create_bitmap(width, height);
     
     Raio ray = camera->PrimeiroRaio();
     for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++) {
-            Cor_rgb color = scene->Intercepta(ray, 0);
+			Cor_rgb color;
+			if (interceptaBoundingBox(box, ray))
+           		color = scene->Intercepta(ray, 0);
+			else
+				color = Cor_rgb(60, 60, 60);
             putpixel(buffer, j, height-i, RayTracer::makeColor(color));
             ray = camera->ProximoRaio();
         }
