@@ -25,6 +25,9 @@ class Camara{
 	  Camara();
 	  ~Camara();
  //* Atribuição
+    void AtribuiPosicao(Vetor_3D _olho);
+    void AtribuiDirecao(Vetor_3D _direcao);
+    void AtribuiVUP(Vetor_3D _vup);
     void Atribui( Vetor_3D olho, Vetor_3D _direcao, Vetor_3D _vup);
     void Atribui( Vetor_3D olho, Vetor_3D _direcao, Vetor_3D _vup, int _linhas, int _colunas );
  //* Pegando os Raios

@@ -6,6 +6,7 @@
 #include <guichan/allegro.hpp>
 #include <allegro.h>
 
+#include "../hpp/define.hpp"
 #include "../hpp/varios.hpp"
 #include "../hpp/objeto.hpp"
 #include "../hpp/camara.hpp"
@@ -25,10 +26,15 @@ public:
     RayTracer();
     ~RayTracer();
     
+    void setCameraPosition(Vetor_3D position);
+    void setCameraDirection(Vetor_3D direction);
+    void setCameraEye(Vetor_3D eye);
+
     void setCamera(Vetor_3D position, Vetor_3D direction, Vetor_3D eye);
 
-    BITMAP * run();
-
+    void run();
+    
+    BITMAP * getBuffer() const { return buffer; }
     int getWidth() const { return width; }
     int getHeight() const { return height; }
     
@@ -39,39 +45,50 @@ RayTracer::RayTracer() {
     camera = new Camara();
     scene = new Cenario();
     
-    LeArquivoDAT(scene, camera, &width, &height, name);
+    LeArquivoDAT(scene, camera, &height, &width, name);
     LeArquivoPLY(scene, name);
-
-    buffer = create_bitmap(width, height);
-    clear_to_color(buffer, makecol(0, 0, 0));
+    
+    buffer = NULL;
 }
 
 RayTracer::~RayTracer() {
-    destroy_bitmap(buffer);
+    if (buffer) destroy_bitmap(buffer);
+
     delete camera;
     delete scene;
+}
+void RayTracer::setCameraPosition(Vetor_3D position) {
+    camera->AtribuiPosicao(position);
+}
+
+void RayTracer::setCameraDirection(Vetor_3D direction) {
+    camera->AtribuiDirecao(direction);
+}
+
+void RayTracer::setCameraEye(Vetor_3D eye) {
+    camera->AtribuiVUP(eye);
 }
 
 void RayTracer::setCamera(Vetor_3D position, Vetor_3D direction, Vetor_3D eye) {
     camera->Atribui(position, direction, eye);
 }
 
-BITMAP * RayTracer::run() {
+void RayTracer::run() {
+    buffer = create_bitmap(width, height);
+    
     Raio ray = camera->PrimeiroRaio();
-
     for (int i = 0; i < width; i++) {
         for (int j = 0; j < height; j++) {
-            Cor_rgb cor = scene->Intercepta(ray, 0);
-            putpixel(buffer, i, j, RayTracer::makeColor(cor));
+            Cor_rgb color = scene->Intercepta(ray, 0);
+            putpixel(buffer, j, height-i, RayTracer::makeColor(color));
             ray = camera->ProximoRaio();
         }
     }
-
-    return buffer;
 }
 
 int RayTracer::makeColor(Cor_rgb color) {
-    return makecol(color.R(), color.G(), color.B());
+    if (MAXI(color.R(),MAXI(color.G(), color.B())) > 255) printf("AA\n");
+    return makecol(color.R() , color.G(), color.B());
 }
 
 class VectorInput : public gcn::Container {
@@ -129,21 +146,54 @@ void VectorInput::setCaption(const char * caption) {
 
 class App {
 private:
-    BITMAP *                    display;
-    VectorInput *               vectorInput;
+    int state;
+    int width;
+    int height;
+    
+    gcn::Gui *          gui;
+    gcn::Container *    top;
+    gcn::ImageFont *    font;
+
+    BITMAP *            display;
+    VectorInput *       vectorInput;
+    RayTracer *         rayTracer;
+    gcn::Button *       refresh;
 
     gcn::AllegroInput *         input;
     gcn::AllegroGraphics *      graphics;
     gcn::AllegroImageLoader *   loader;
 
-    gcn::Gui *          gui;
-    gcn::Container *    top;
-    gcn::ImageFont *    font;
-    
-    RayTracer * rayTracer;
+private:
+    struct VectorListener : public gcn::ActionListener {
+        VectorListener(App * const app)
+        :   app(app) {}
+        
+        App * const app;
 
-    int width;
-    int height;
+        void action(const gcn::ActionEvent& actionEvent) {
+            if (app->state == 0)
+                app->rayTracer->setCameraPosition(app->vectorInput->getVector3D());
+            else if (app->state == 1)
+                app->rayTracer->setCameraDirection(app->vectorInput->getVector3D());
+            else if (app->state == 2)
+                app->rayTracer->setCameraEye(app->vectorInput->getVector3D());
+
+            app->rayTracer->run();
+        }
+    };
+
+    struct RefreshListener : public gcn::ActionListener {
+        RefreshListener(App * const app)
+        :   app(app) {}
+        
+        App * const app;
+        
+        void action(const gcn::ActionEvent& actionEvent) {
+            app->rayTracer->run();
+        }
+    };
+
+    VectorListener * vectorListener;
 public:
     App();
     ~App();
@@ -151,23 +201,23 @@ public:
     void run();
 };
 
-App::App() {    
-    allegro_init();
-    
+App::App() {
+    state = 0;
+
     rayTracer = new RayTracer();
     width = rayTracer->getWidth();
     height = rayTracer->getHeight() + 20;
 
-    int bpp = desktop_color_depth();
-    set_color_depth(bpp ? bpp : 16);
+    allegro_init();
+    install_keyboard();
+    install_mouse();
+    install_timer();
+    set_color_depth(16);
+    set_alpha_blender();
 
     set_gfx_mode(GFX_AUTODETECT_WINDOWED, width, height, 0, 0);
     
     display = create_bitmap(width, height);
-    
-    install_keyboard();
-    install_mouse();
-    install_timer();
 
     loader = new gcn::AllegroImageLoader();
     gcn::Image::setImageLoader(loader);
@@ -192,7 +242,13 @@ App::App() {
     gui->setTop(top);
 
     vectorInput = new VectorInput("   Camera   ", width, 20);
+    vectorListener = new VectorListener(this);
+    vectorInput->addActionListener(vectorListener);
     top->add(vectorInput, 0, 0);
+
+    refresh = new gcn::Button("Refresh...");
+    refresh->setDimension(gcn::Rectangle(0, 0, 50, 20));
+    top->add(refresh, width/2, height/2);
 }
 
 App::~App() {
@@ -208,14 +264,18 @@ App::~App() {
     delete loader;
     
     destroy_bitmap(display);
+
+    allegro_exit();
 }
 
 void App::run() {
+    rayTracer->run();
+
     while(!key[KEY_ESC]) {
         gui->logic();
         gui->draw();
-
-        blit(rayTracer->run(), display, 0, 0, 0, 20, width, height-20);
+        
+        blit(rayTracer->getBuffer(), display, 0, 0, 0, 20, width, height-20);
         draw_sprite(display, mouse_sprite, mouse_x, mouse_y);
         blit(display, screen, 0, 0, 0, 0, width, height);
     }

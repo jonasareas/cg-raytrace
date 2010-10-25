@@ -12,6 +12,28 @@ Camara::Camara( )
   PreparaRaios();
 }
 
+void Camara::AtribuiPosicao( Vetor_3D _olho)
+{
+  olho.Copia( _olho );
+
+  PreparaRaios();
+}
+
+void Camara::AtribuiDirecao( Vetor_3D _direcao)
+{
+  direcao.Copia( _direcao );
+
+  PreparaRaios();
+}
+
+
+void Camara::AtribuiVUP( Vetor_3D _vup)
+{
+  vup.Copia( _vup );
+
+  PreparaRaios();
+}
+
 void Camara::Atribui( Vetor_3D _olho, Vetor_3D _direcao, Vetor_3D _vup)
 {
   olho.Copia( _olho );
